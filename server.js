@@ -1,16 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const puppeteer = require('puppeteer');
-const puppeteerCore = require('puppeteer-core');
-const chromium = require('@sparticuz/chromium');
 const dns = require('dns');
 const path = require('path');
 const { calculateEmissions, generateSuggestions } = require('./carbonCalculator');
 const connectDB = require('./config/db');
 const Analysis = require('./models/Analysis');
-
-// Connect to MongoDB
-connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -78,6 +72,7 @@ async function checkGreenHosting(hostname) {
 
 // Main analysis endpoint
 app.post('/api/analyze', async (req, res) => {
+  await connectDB();
   const { url } = req.body;
 
   if (!url) {
@@ -114,8 +109,10 @@ app.post('/api/analyze', async (req, res) => {
     ]);
 
     // 3. Puppeteer — load page and capture resource data (supports Vercel serverless & local dev)
-    const isVercel = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION;
+    const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION);
     if (isVercel) {
+      const puppeteerCore = require('puppeteer-core');
+      const chromium = require('@sparticuz/chromium');
       browser = await puppeteerCore.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
@@ -123,6 +120,7 @@ app.post('/api/analyze', async (req, res) => {
         headless: chromium.headless,
       });
     } else {
+      const puppeteer = require('puppeteer');
       browser = await puppeteer.launch({
         headless: 'new',
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
@@ -328,6 +326,7 @@ app.post('/api/analyze', async (req, res) => {
 // Leaderboard endpoint
 app.get('/api/leaderboard', async (req, res) => {
   try {
+    await connectDB();
     const cleanest = await Analysis.aggregate([
       { $group: { _id: "$hostname", avgCo2: { $avg: "$co2Grams" }, count: { $sum: 1 }, grade: { $first: "$grade" } } },
       { $sort: { avgCo2: 1 } },
@@ -348,6 +347,7 @@ app.get('/api/leaderboard', async (req, res) => {
 // History endpoint — fetch all scans for a domain (for trend chart)
 app.get('/api/history', async (req, res) => {
   try {
+    await connectDB();
     const { domain } = req.query;
     if (!domain) {
       return res.status(400).json({ error: 'Domain query parameter is required' });
@@ -367,6 +367,7 @@ app.get('/api/history', async (req, res) => {
 // Recent scans endpoint
 app.get('/api/recent', async (req, res) => {
   try {
+    await connectDB();
     const recent = await Analysis.find()
       .select('url hostname co2Grams grade totalSizeMB isGreenHosted createdAt')
       .sort({ createdAt: -1 })
@@ -422,6 +423,7 @@ app.get('*', (req, res) => {
 
 // Start server locally if not running on Vercel
 if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  connectDB();
   app.listen(PORT, () => {
     console.log(`\n🌱 Carbon Footprint Analyzer running at http://localhost:${PORT}\n`);
   });
