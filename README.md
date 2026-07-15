@@ -32,26 +32,12 @@ The internet accounts for roughly **3.7% of global greenhouse gas emissions**—
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Backend Runtime** | **Node.js** | High-performance asynchronous JavaScript server runtime |
-| **Web Framework** | **Express.js** | REST API routing, JSON middleware, static asset delivery |
-| **Database & ORM** | **MongoDB + Mongoose** | NoSQL database for scan history, aggregations, and leaderboard ranking |
-| **Web Scraper** | **Puppeteer** (`puppeteer-core` + `@sparticuz/chromium`) | Headless browser engine for deep network and DOM inspection |
-| **Frontend** | **Vanilla HTML5, CSS3 & ES6+ JS** | Multi-page architecture with custom glassmorphism & `<canvas>` animations |
-| **Serverless Deployment** | **Vercel Serverless Functions (`vercel.json`)** | Optimized Lambda packaging (`includeFiles`, edge CDN static delivery) |
+| **Backend Runtime** | **Node.js** 
+| **Web Framework** | **Express.js** 
+| **Database & ORM** | **MongoDB + Mongoose** 
+| **Web Scraper** | **Puppeteer** (`puppeteer-core` + `@sparticuz/chromium`) 
+| **Frontend** | **Vanilla HTML5, CSS3 & ES6+ JS** 
 
----
-
-## 🏗️ Architecture: Why Vanilla JS Instead of React?
-
-CarbonIQ practices what it preaches. While most modern web applications rely on heavy frontend frameworks like React or Next.js—which require large `node_modules`, virtual DOM overhead, and bulky JavaScript bundles—CarbonIQ uses **pure Vanilla Web Technologies**:
-
-| React / Framework Concept | CarbonIQ Vanilla JS Implementation |
-| :--- | :--- |
-| **Components** | Semantic HTML structures + reusable modular CSS utility classes (`.card`, `.btn`) |
-| **State Management (`useState`)** | Plain JS variables, `dataset.*` attributes, and `localStorage` (dark/light theme) |
-| **Effects (`useEffect`)** | Native DOM event listeners (`DOMContentLoaded`) and `IntersectionObserver` (scroll reveal) |
-| **API Fetching** | Native `fetch()` API interacting directly with `/api/analyze` and `/api/leaderboard` |
-| **3D / Animations** | Native `<canvas>` API (`requestAnimationFrame` rotating Earth globe) and CSS keyframes |
 
 ---
 
@@ -76,9 +62,8 @@ npm install
 Create a `.env` file in the root directory:
 ```env
 PORT=3000
-MONGODB_URI=mongodb://127.0.0.1:27017/carboniq
+MONGODB_URI=mongodb://MONGODB_URI/carboniq
 ```
-*(Note: If `MONGODB_URI` is omitted, the app gracefully runs in memory-only mode and skips saving to the database).*
 
 ### 4. Start the Development Server
 ```bash
@@ -86,103 +71,6 @@ npm run dev
 # or
 node server.js
 ```
-
-Visit **`http://localhost:3000`** in your browser to launch CarbonIQ! 🌱
-
----
-
-## ☁️ Vercel Serverless Deployment
-
-CarbonIQ is engineered out-of-the-box for **Vercel Serverless Functions**. Standard Puppeteer (~170MB) exceeds Vercel's 50MB Lambda limit and read-only `/var/task` restrictions. 
-
-To solve this, `server.js` dynamically detects the environment (`process.env.VERCEL`):
-- **Locally:** Uses standard `puppeteer` (`headless: 'new'`).
-- **On Vercel:** Lazy-loads `puppeteer-core` with `@sparticuz/chromium` (a lightweight 45MB compressed serverless binary).
-
-Our `vercel.json` ensures zero cold-start crashes (`FUNCTION_INVOCATION_FAILED`) and exact asset delivery:
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["public/**"],
-        "maxLambdaSize": "50mb",
-        "memory": 1024,
-        "maxDuration": 60
-      }
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/server.js"
-    }
-  ]
-}
-```
-
----
-
-## 📡 API Reference
-
-### `POST /api/analyze`
-Analyzes any website URL and returns full SWDM v4 carbon metrics, resource breakdowns, and tips.
-
-**Request Body:**
-```json
-{
-  "url": "https://example.com"
-}
-```
-
-**Response Example (Simplified):**
-```json
-{
-  "success": true,
-  "url": "https://example.com",
-  "hostname": "example.com",
-  "totalSizeMB": 1.45,
-  "totalRequests": 34,
-  "emissions": {
-    "perPageView": {
-      "total": 0.281,
-      "dataCenters": 0.079,
-      "networks": 0.085,
-      "userDevices": 0.117
-    },
-    "grade": {
-      "letter": "B",
-      "color": "#60a5fa",
-      "label": "Good"
-    },
-    "isGreenHosted": true
-  },
-  "server": {
-    "ip": "93.184.216.34",
-    "geo": { "country": "United States", "city": "Los Angeles", "isp": "Edgecast Inc." },
-    "greenHosting": { "green": true, "hostedBy": "Edgecast Inc." }
-  },
-  "resources": {
-    "images": { "count": 12, "size": 945100, "items": [...] },
-    "scripts": { "count": 8, "size": 312000, "items": [...] }
-  },
-  "suggestions": [...]
-}
-```
-
----
-
-### `GET /api/leaderboard`
-Returns the **Top 10 Cleanest** and **Top 10 Dirtiest** websites aggregated by average `gCO₂` per page view.
-
-### `GET /api/history?domain=example.com`
-Returns chronological scan history (up to 100 entries) for a given domain to generate historical emission trends.
-
-### `GET /api/recent`
-Returns the 20 most recently analyzed websites across the globe.
 
 ---
 
@@ -199,10 +87,7 @@ Returns the 20 most recently analyzed websites across the globe.
 
 ---
 
-## 📄 License
-
-This project is open-source and available under the **MIT License**.
 
 <div align="center">
-  <p>Made with 💚 to build a cleaner, faster, and more sustainable web.</p>
+  <p>Made with 💚 by Aadi.</p>
 </div>
