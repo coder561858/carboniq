@@ -30,12 +30,12 @@ The internet accounts for roughly **3.7% of global greenhouse gas emissions**—
 
 ## 🛠️ Technology Stack
 
-| Layer | Technology | Purpose |
+| Layer | Technology 
 | :--- | :--- | :--- |
 | **Backend Runtime** | **Node.js** 
 | **Web Framework** | **Express.js** 
 | **Database & ORM** | **MongoDB + Mongoose** 
-| **Web Scraper** | **Puppeteer** (`puppeteer-core` + `@sparticuz/chromium`) 
+| **Web Scraper** | **Puppeteer** 
 | **Frontend** | **Vanilla HTML5, CSS3 & ES6+ JS** 
 
 
@@ -62,7 +62,7 @@ npm install
 Create a `.env` file in the root directory:
 ```env
 PORT=3000
-MONGODB_URI=mongodb://MONGODB_URI/carboniq
+MONGODB_URI=your_mongodb_connection_string
 ```
 
 ### 4. Start the Development Server
