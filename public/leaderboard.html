@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="carboniq Global Leaderboard — See the cleanest and most carbon-intensive websites analyzed worldwide, plus historical carbon trends.">
+  <title>carboniq — Global Leaderboard & Carbon Trends</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="leaderboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <span class="logo-icon">🌱</span>
+        <span class="brand-name"><span class="brand-carbon">carbon</span><span class="brand-iq">iq</span></span>
+      </a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+      <ul class="navbar-links" id="navbar-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analyze.html">Analyze</a></li>
+        <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+        <li><button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="#818cf8" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========== HERO HEADER ========== -->
+  <section class="lb-hero">
+    <div class="container">
+      <span class="section-badge">🏆 Global Rankings</span>
+      <h1 class="lb-title">Global Carbon Leaderboard</h1>
+      <p class="lb-subtitle">See how websites rank based on their carbon emissions. Track trends over time and discover the greenest corners of the internet.</p>
+    </div>
+  </section>
+
+  <!-- ========== STATS OVERVIEW ========== -->
+  <section class="lb-stats-section">
+    <div class="container">
+      <div class="lb-stats-grid">
+        <div class="lb-stat-card">
+          <div class="lb-stat-number" id="stat-total-scans">—</div>
+          <div class="lb-stat-label">Total Scans</div>
+        </div>
+        <div class="lb-stat-card">
+          <div class="lb-stat-number" id="stat-unique-domains">—</div>
+          <div class="lb-stat-label">Unique Domains</div>
+        </div>
+        <div class="lb-stat-card">
+          <div class="lb-stat-number" id="stat-avg-co2">—</div>
+          <div class="lb-stat-label">Avg CO₂ (g/view)</div>
+        </div>
+        <div class="lb-stat-card">
+          <div class="lb-stat-number" id="stat-green-pct">—</div>
+          <div class="lb-stat-label">Green Hosted</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== LEADERBOARD TABLES ========== -->
+  <section class="lb-tables-section">
+    <div class="container">
+      <div class="lb-tables-grid">
+        <!-- Cleanest Websites -->
+        <div class="lb-table-card">
+          <div class="lb-table-header cleanest">
+            <span class="lb-table-icon">🌿</span>
+            <h2>Top 10 Cleanest</h2>
+            <p>Lowest carbon emissions per page view</p>
+          </div>
+          <div class="lb-table-body" id="cleanest-table">
+            <div class="lb-loading">
+              <div class="lb-spinner"></div>
+              <span>Loading leaderboard…</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dirtiest Websites -->
+        <div class="lb-table-card">
+          <div class="lb-table-header dirtiest">
+            <span class="lb-table-icon">🏭</span>
+            <h2>Top 10 Most Intensive</h2>
+            <p>Highest carbon emissions per page view</p>
+          </div>
+          <div class="lb-table-body" id="dirtiest-table">
+            <div class="lb-loading">
+              <div class="lb-spinner"></div>
+              <span>Loading leaderboard…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== HISTORICAL TRACKING ========== -->
+  <section class="lb-history-section">
+    <div class="container">
+      <div class="lb-history-card">
+        <div class="lb-history-header">
+          <div>
+            <span class="section-badge">📈 Historical Tracking</span>
+            <h2>Carbon Footprint Over Time</h2>
+            <p>Search for any domain to see how its carbon emissions have changed across scans.</p>
+          </div>
+        </div>
+
+        <div class="lb-history-search">
+          <form id="history-form" autocomplete="off">
+            <input type="text" id="history-domain" placeholder="Enter domain, e.g. github.com" required>
+            <button type="submit">Track History</button>
+          </form>
+        </div>
+
+        <div class="lb-chart-container" id="chart-container" style="display:none;">
+          <canvas id="history-chart"></canvas>
+        </div>
+
+        <div class="lb-history-empty" id="history-empty">
+          <div class="lb-empty-icon">📊</div>
+          <p>Search for a domain above to view its carbon emission history and trend analysis.</p>
+        </div>
+
+        <div class="lb-history-error" id="history-error" style="display:none;">
+          <p id="history-error-msg"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== RECENT SCANS ========== -->
+  <section class="lb-recent-section">
+    <div class="container">
+      <span class="section-badge">🕐 Recent Activity</span>
+      <h2 class="lb-section-title">Recent Scans</h2>
+      <p class="lb-section-subtitle">The latest websites analyzed on carboniq.</p>
+
+      <div class="lb-recent-grid" id="recent-grid">
+        <div class="lb-loading">
+          <div class="lb-spinner"></div>
+          <span>Loading recent scans…</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand & Mission -->
+        <div class="footer-col">
+          <a href="index.html#home" class="footer-brand-title">
+            <span class="logo-icon">🌱</span>
+            <span class="brand-name"><span class="brand-carbon">carbon</span><span class="brand-iq">iq</span></span>
+          </a>
+          <p class="footer-desc">
+            Empowering developers, designers, and organizations to measure, optimize, and decarbonize their digital web footprint with high-precision headless automation.
+          </p>
+          <div class="footer-status-badge">
+            <span class="footer-status-dot"></span>
+            Live Status: Online & Zero-Tracking
+          </div>
+        </div>
+
+        <!-- Col 2: Platform & Features -->
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="analyze.html">Analyze Website</a></li>
+            <li><a href="index.html#features">Core Features</a></li>
+            <li><a href="index.html#how-it-works">How It Works</a></li>
+            <li><a href="index.html#faq">FAQ & Help</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Find Us -->
+        <div class="footer-col">
+          <h4>Find Us</h4>
+          <ul>
+            <li><a href="tel:+15550198273">Tel: +1 (555) 019-8273</a></li>
+            <li><a href="mailto:carboniq@gmail.com">Gmail: carboniq@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 carboniq. Built for a greener, more sustainable internet.
+      </div>
+    </div>
+  </footer>
+
+  <script src="leaderboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Analyze the carbon footprint of any website. Measure page weight, resource usage, server energy source, and get actionable tips to reduce CO₂ emissions.">
+  <title>carboniq — Website Carbon Footprint Analyzer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <span class="logo-icon">🌱</span>
+        <span class="brand-name"><span class="brand-carbon">carbon</span><span class="brand-iq">iq</span></span>
+      </a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+      <ul class="navbar-links" id="navbar-links">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#how-it-works">How It Works</a></li>
+        <li><a href="index.html#faq">FAQ</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="analyze.html" class="navbar-cta">Analyze Now →</a></li>
+        <li><button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="#818cf8" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========== ANALYZER TOOL ========== -->
+  <section class="section analyzer-section" id="analyzer" style="padding-top: 130px; min-height: calc(100vh - 200px);">
+    <div class="container">
+      <div class="text-center">
+        <h1 class="section-title" style="font-size: 2.75rem; margin-bottom: var(--space-md);">Analyze any website</h1>
+        <p class="section-subtitle mx-auto" style="margin-bottom: var(--space-2xl);">
+          Enter a URL below to scan it for carbon emissions, resource usage, and green hosting status.
+        </p>
+      </div>
+
+      <form class="search-form" id="analyze-form" autocomplete="off">
+        <input type="text" id="url-input" placeholder="Enter a website URL, e.g. google.com" aria-label="Website URL" required autofocus>
+        <button type="submit" id="analyze-btn">
+          <span class="btn-icon"></span> Analyze
+        </button>
+      </form>
+
+      <!-- Loading -->
+      <section class="loading-section" id="loading-section">
+        <div class="loading-spinner"></div>
+        <p class="loading-text" id="loading-text">Analyzing website…</p>
+        <p class="loading-tip" id="loading-tip">Loading the page in a headless browser…</p>
+      </section>
+
+      <!-- Error -->
+      <section class="error-section" id="error-section">
+        <div class="error-card">
+          <span class="error-icon">⚠️</span>
+          <p class="error-message" id="error-message">Something went wrong.</p>
+          <button class="error-retry" id="error-retry-btn">Try Again</button>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section class="results-section" id="results-section">
+        <div class="result-header">
+          <p class="analyzed-url">Analyzed Website</p>
+          <h2 class="site-title" id="result-site-title">—</h2>
+          <p class="analyzed-timestamp" id="result-timestamp"></p>
+        </div>
+
+        <!-- Score -->
+        <div class="score-card" id="score-card">
+          <div class="score-grade-ring">
+            <svg viewBox="0 0 180 180">
+              <circle class="ring-bg" cx="90" cy="90" r="80" />
+              <circle class="ring-progress" id="ring-progress" cx="90" cy="90" r="80" />
+            </svg>
+            <div class="score-grade-text">
+              <div class="score-grade-letter" id="score-grade-letter">—</div>
+              <div class="score-grade-label" id="score-grade-label"></div>
+            </div>
+          </div>
+          <div class="score-co2">
+            <span class="score-co2-value" id="score-co2-value">0</span>
+            <span class="score-co2-unit">g CO₂e</span>
+            <p class="score-co2-label">per page view</p>
+          </div>
+          <div class="score-annual">
+            <div class="score-annual-item">
+              <div class="score-annual-value" id="annual-kg">—</div>
+              <div class="score-annual-label">kg CO₂ / year</div>
+            </div>
+            <div class="score-annual-item">
+              <div class="score-annual-value" id="annual-kwh">—</div>
+              <div class="score-annual-label">kWh / year</div>
+            </div>
+            <div class="score-annual-item">
+              <div class="score-annual-value" id="annual-views">—</div>
+              <div class="score-annual-label">page views / month</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon size">📦</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-size">—</span>
+              <span class="stat-label">Page Size</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon images">🖼️</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-images">—</span>
+              <span class="stat-label">Images</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon scripts">📜</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-scripts">—</span>
+              <span class="stat-label">Scripts & Styles</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blocking">⚡</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-blocking">—</span>
+              <span class="stat-label">Render-Blocking</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts + Server -->
+        <div class="two-col">
+          <div class="breakdown-card">
+            <h3 class="card-title"><span class="card-icon">📊</span> Resource Breakdown</h3>
+            <div class="chart-container">
+              <div class="donut-chart">
+                <canvas id="donut-canvas" width="300" height="300"></canvas>
+                <div class="donut-center">
+                  <div class="donut-center-value" id="donut-total">—</div>
+                  <div class="donut-center-label">Total</div>
+                </div>
+              </div>
+              <div class="chart-legend" id="chart-legend"></div>
+            </div>
+          </div>
+          <div class="server-card">
+            <h3 class="card-title"><span class="card-icon">🌐</span> Server Information</h3>
+            <div class="server-details" id="server-details"></div>
+          </div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="suggestions-section">
+          <h3 class="card-title" style="margin-bottom: var(--space-lg);">
+            <span class="card-icon">💡</span> Recommendations to Reduce Emissions
+          </h3>
+          <div class="suggestions-grid" id="suggestions-grid"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand & Mission -->
+        <div class="footer-col">
+          <a href="index.html#home" class="footer-brand-title">
+            <span class="logo-icon">🌱</span>
+            <span class="brand-name"><span class="brand-carbon">carbon</span><span class="brand-iq">iq</span></span>
+          </a>
+          <p class="footer-desc">
+            Empowering developers, designers, and organizations to measure, optimize, and decarbonize their digital web footprint with high-precision headless automation.
+          </p>
+          <div class="footer-status-badge">
+            <span class="footer-status-dot"></span>
+            Live Status: Online & Zero-Tracking
+          </div>
+        </div>
+
+        <!-- Col 2: Platform & Features -->
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="analyze.html">Analyze Website</a></li>
+            <li><a href="index.html#features">Core Features</a></li>
+            <li><a href="index.html#how-it-works">How It Works</a></li>
+            <li><a href="index.html#faq">FAQ & Help</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Find Us -->
+        <div class="footer-col">
+          <h4>Find Us</h4>
+          <ul>
+            <li><a href="tel:+15550198273">Tel: +1 (555) 019-8273</a></li>
+            <li><a href="mailto:carboniq@gmail.com">Gmail: carboniq@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer Bottom Bar -->
+      <div class="footer-bottom">
+        © 2026 carboniq. Built for a greener, more sustainable internet.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox overlay -->
+  <div class="lightbox-overlay" id="lightbox-overlay">
+    <button class="lightbox-close" id="lightbox-close">✕</button>
+    <div class="lightbox-content" id="lightbox-content"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

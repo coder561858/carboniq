@@ -1,0 +1,25 @@
+{
+  "name": "carbon-footprint-analyzer",
+  "version": "1.0.0",
+  "description": "Analyze the carbon footprint of any website using the Sustainable Web Design Model v4",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "mongoose": "^9.7.4",
+    "puppeteer": "^23.0.0"
+  },
+  "keywords": [
+    "carbon",
+    "footprint",
+    "sustainability",
+    "web",
+    "analyzer"
+  ],
+  "license": "MIT"
+}

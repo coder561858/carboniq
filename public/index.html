@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Analyze the carbon footprint of any website. Measure page weight, resource usage, server energy source, and get actionable tips to reduce CO₂ emissions.">
+  <meta property="og:title" content="carboniq — Build a Greener Web, One Site at a Time">
+  <meta property="og:description" content="Discover how much CO₂ your website produces per visit and learn how to reduce it.">
+  <meta property="og:type" content="website">
+  <title>carboniq — Build a Greener Web, One Site at a Time</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a href="#" class="navbar-logo">
+        <span class="logo-icon">🌱</span>
+        <span class="brand-name"><span class="brand-carbon">carbon</span><span class="brand-iq">iq</span></span>
+      </a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+      <ul class="navbar-links" id="navbar-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="analyze.html" class="navbar-cta">Analyze Now →</a></li>
+        <li><button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="#818cf8" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========== HERO SCROLL WRAPPER (sticky hero + rising panel) ========== -->
+  <div id="hero-scroll-wrapper">
+
+  <!-- ========== HERO ========== -->
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <div class="hero-bg-media" id="hero-bg-media">
+        <div class="hero-bg-overlay"></div>
+      </div>
+      <div class="container hero-content hero-split">
+        <!-- Left: Text Content -->
+        <div class="hero-text">
+          <div class="hero-problem-badge">
+            <span class="badge-dot"></span>
+            The internet has a carbon problem
+          </div>
+
+          <h1>Build a <span class="green">greener</span> web,<br>one site at a time</h1>
+
+          <p class="hero-desc">
+            Every page view produces CO₂. Your website's size, hosting, and resources all contribute to carbon emissions.
+            Let's measure it — and fix it.
+          </p>
+
+          <div class="hero-actions">
+            <a href="analyze.html" class="btn btn-primary">Analyze website</a>
+            <a href="#what-is" class="btn btn-outline">Learn more ↓</a>
+          </div>
+        </div>
+
+        <!-- Right: Orbital Ring Animation -->
+        <div class="hero-orbit-container" aria-hidden="true">
+          <!-- Outer rotating ring -->
+          <div class="orbit-ring orbit-ring--outer">
+            <div class="orbit-icon" style="--i:0"><span>🌱</span></div>
+            <div class="orbit-icon" style="--i:1"><span>⚡</span></div>
+            <div class="orbit-icon" style="--i:2"><span>🏭</span></div>
+            <div class="orbit-icon" style="--i:3"><span>🍃</span></div>
+            <div class="orbit-icon" style="--i:4"><span>♻️</span></div>
+            <div class="orbit-icon" style="--i:5"><span>🌍</span></div>
+          </div>
+          <!-- Inner rotating ring (reverse direction) -->
+          <div class="orbit-ring orbit-ring--inner">
+            <div class="orbit-icon" style="--i:0"><span>💧</span></div>
+            <div class="orbit-icon" style="--i:1"><span>☀️</span></div>
+            <div class="orbit-icon" style="--i:2"><span>🌿</span></div>
+            <div class="orbit-icon" style="--i:3"><span>💨</span></div>
+          </div>
+          <!-- Center pulsating element -->
+          <div class="orbit-center">
+            <span class="orbit-center-icon">🌎</span>
+            <div class="orbit-center-pulse"></div>
+            <div class="orbit-center-pulse orbit-center-pulse--delay"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- /#hero-scroll-wrapper -->
+
+  <!-- ========== CONTENT PANEL (slides up over hero) ========== -->
+  <div id="content-panel">
+
+
+
+  <!-- ========== WHAT IS DIGITAL CARBON FOOTPRINT ========== -->
+  <section class="section what-is-section" id="what-is">
+    <div class="container">
+      <div class="text-center reveal">
+        <span class="section-badge">📚 Basics</span>
+        <h2 class="section-title">What is a digital carbon footprint?</h2>
+        <p class="section-subtitle mx-auto">
+          A website's carbon footprint is the total CO₂ emitted when someone loads a page — from data centers
+          to networks to the device in your hand.
+        </p>
+      </div>
+
+      <div class="what-is-grid">
+        <!-- Expandable Card 1 -->
+        <div class="expandable-card reveal" data-expandable>
+          <div class="expandable-card-header">
+            <div class="expandable-card-icon green">⚡</div>
+            <span class="expandable-card-title">Every interaction uses energy</span>
+            <span class="expandable-card-toggle">▼</span>
+          </div>
+          <div class="expandable-card-body">
+            <div class="expandable-card-content">
+              <p>Every time someone visits a website, data is transferred across the internet. This data travels through networks, is processed by servers in data centers, and rendered on the user's device.</p>
+              <p>Each step in this chain consumes electricity. The carbon intensity of that electricity depends on the energy grid powering the infrastructure — coal-heavy grids produce significantly more CO₂ than renewable ones.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expandable Card 2 -->
+        <div class="expandable-card reveal" data-expandable>
+          <div class="expandable-card-header">
+            <div class="expandable-card-icon blue">📊</div>
+            <span class="expandable-card-title">Page weight is the biggest factor</span>
+            <span class="expandable-card-toggle">▼</span>
+          </div>
+          <div class="expandable-card-body">
+            <div class="expandable-card-content">
+              <p>The total size of a web page — images, scripts, stylesheets, fonts, and videos — is the primary driver of its carbon footprint. Larger pages require more data transfer, more processing power, and therefore more energy.</p>
+              <p>The median web page in 2024 is about 2.3 MB. Reducing this by even 30% can significantly lower emissions, especially for high-traffic sites.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expandable Card 3 -->
+        <div class="expandable-card reveal" data-expandable>
+          <div class="expandable-card-header">
+            <div class="expandable-card-icon purple">🌿</div>
+            <span class="expandable-card-title">Green hosting makes a massive difference</span>
+            <span class="expandable-card-toggle">▼</span>
+          </div>
+          <div class="expandable-card-body">
+            <div class="expandable-card-content">
+              <p>If your hosting provider runs on renewable energy (solar, wind, hydro), the data center portion of your website's emissions drops by up to 95%. This is verified through the Green Web Foundation's database.</p>
+              <p>Many major providers like Google Cloud, AWS (some regions), and Cloudflare are already verified green hosts. Check if yours is too!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== IMPACT CALCULATOR ========== -->
+  <section class="section impact-section" id="features">
+    <div class="container">
+      <div class="text-center reveal">
+        <span class="section-badge">📈 Estimate</span>
+        <h2 class="section-title">See the impact of your traffic</h2>
+        <p class="section-subtitle mx-auto">Estimation of different emissions based on monthly views.</p>
+      </div>
+
+      <div class="impact-card reveal">
+        <div class="impact-top">
+          <div class="impact-left">
+            <h3>Estimate your footprint</h3>
+            <p>Based on the average page weight of 2.3 MB and a global grid intensity of 494 gCO₂e/kWh.</p>
+            <div class="impact-input-group">
+              <label class="impact-input-label" for="traffic-input">Monthly page views</label>
+              <div class="impact-input-wrapper">
+                <input type="number" id="traffic-input" class="impact-input" value="10000" readonly>
+                <span class="impact-input-unit">views / month</span>
+              </div>
+            </div>
+          </div>
+          <div class="impact-stats">
+            <div class="impact-stat-card">
+              <div class="impact-stat-value" id="impact-co2">100</div>
+              <div class="impact-stat-unit">kg CO₂</div>
+              <div class="impact-stat-label">per year</div>
+            </div>
+            <div class="impact-stat-card">
+              <div class="impact-stat-value" id="impact-trees">14</div>
+              <div class="impact-stat-unit">trees</div>
+              <div class="impact-stat-label">needed to offset</div>
+            </div>
+            <div class="impact-stat-card">
+              <div class="impact-stat-value" id="impact-km">2,500</div>
+              <div class="impact-stat-unit">km</div>
+              <div class="impact-stat-label">car driving equivalent</div>
+            </div>
+            <div class="impact-stat-card">
+              <div class="impact-stat-value" id="impact-kwh">23</div>
+              <div class="impact-stat-unit">kWh</div>
+              <div class="impact-stat-label">energy consumed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== WHY IT MATTERS ========== -->
+  <section class="section matters-section">
+    <div class="container">
+      <div class="text-center reveal">
+        <span class="section-badge">🌍 Impact</span>
+        <h2 class="section-title">Why reducing emissions matters</h2>
+        <p class="section-subtitle mx-auto">A greener web isn't just good ethics — it improves user experience, reduces costs, and builds trust.</p>
+      </div>
+
+      <div class="matters-grid">
+        <div class="matter-card reveal" data-expandable>
+          <div class="matter-card-icon">🌊</div>
+          <h4>Protect Oceans</h4>
+          <p>Rising CO₂ levels cause ocean acidification, threatening marine ecosystems, coral reefs, and the fishing communities that depend on them.</p>
+        </div>
+        <div class="matter-card reveal" data-expandable>
+          <div class="matter-card-icon">🌡️</div>
+          <h4>Reduce Temperatures</h4>
+          <p>Digital infrastructure contributes to global warming. Optimizing websites reduces overall energy demand and emissions from the tech sector.</p>
+        </div>
+        <div class="matter-card reveal" data-expandable>
+          <div class="matter-card-icon">🌲</div>
+          <h4>Forest Health</h4>
+          <p>Every kg of CO₂ saved helps protect forests and ecosystems that serve as vital carbon sinks for the planet.</p>
+        </div>
+        <div class="matter-card reveal" data-expandable>
+          <div class="matter-card-icon">🔋</div>
+          <h4>Reduce Energy Use</h4>
+          <p>Lighter pages and efficient code mean less electricity consumed by data centers, networks, and user devices worldwide.</p>
+        </div>
+        <div class="matter-card reveal" data-expandable>
+          <div class="matter-card-icon">🚀</div>
+          <h4>Better SEO</h4>
+          <p>Google rewards fast, lightweight sites. Reducing page weight improves Core Web Vitals and search engine rankings.</p>
+        </div>
+        <div class="matter-card reveal" data-expandable>
+          <div class="matter-card-icon">🤝</div>
+          <h4>Build Trust</h4>
+          <p>Demonstrating environmental responsibility strengthens your brand, attracting eco-conscious customers and partners.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== HOW IT WORKS ========== -->
+  <section class="section how-section" id="how-it-works">
+    <div class="container">
+      <div class="text-center reveal">
+        <span class="section-badge">⚙️ Workflow</span>
+        <h2 class="section-title">From URL to action plan in seconds</h2>
+        <p class="section-subtitle mx-auto">Three simple steps to understand and reduce your website's environmental impact.</p>
+      </div>
+
+      <div class="steps-row">
+        <div class="step-card reveal">
+          <div class="step-number">1</div>
+          <h4>Enter your URL</h4>
+          <p>Just paste any website URL. We'll load it in a real headless browser to capture everything.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">2</div>
+          <h4>Get instant analysis</h4>
+          <p>We measure page weight, resources, server location, green hosting status, and calculate CO₂ emissions.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">3</div>
+          <h4>Get actionable tips</h4>
+          <p>Receive personalized recommendations with estimated impact to reduce your site's carbon footprint.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== WHAT WE ANALYZE ========== -->
+  <section class="section analyze-section" id="analyze-features">
+    <div class="container">
+      <div class="text-center reveal">
+        <span class="section-badge">🔬 Analysis</span>
+        <h2 class="section-title">What carboniq analyzes</h2>
+        <p class="section-subtitle mx-auto">A comprehensive breakdown of your website's environmental impact.</p>
+      </div>
+
+      <div class="analyze-grid" id="analyze-grid">
+        <div class="analyze-feature reveal" data-expand-feature>
+          <div class="analyze-feature-icon green">📦</div>
+          <div class="analyze-feature-text">
+            <h4>Total page size</h4>
+            <p>Complete transfer size including all resources.</p>
+          </div>
+          <div class="analyze-feature-extra">
+            We load your page in a real Chromium browser and measure the actual encoded data length of every network request — giving you the true transfer size, including compression.
+          </div>
+        </div>
+        <div class="analyze-feature reveal" data-expand-feature>
+          <div class="analyze-feature-icon purple">🖼️</div>
+          <div class="analyze-feature-text">
+            <h4>Resource count</h4>
+            <p>Images, scripts, stylesheets, fonts, and media.</p>
+          </div>
+          <div class="analyze-feature-extra">
+            Every network request is categorized: images (PNG, JPG, WebP, SVG), JavaScript files, CSS stylesheets, fonts (WOFF2, TTF), media, and other resources. Bloated resource counts slow your page and increase energy use.
+          </div>
+        </div>
+        <div class="analyze-feature reveal" data-expand-feature>
+          <div class="analyze-feature-icon red">⚡</div>
+          <div class="analyze-feature-text">
+            <h4>Render-blocking resources</h4>
+            <p>JS and CSS that delay page rendering.</p>
+          </div>
+          <div class="analyze-feature-extra">
+            We detect scripts in the &lt;head&gt; without <code>async</code> or <code>defer</code> attributes, and stylesheets that block rendering. These make users wait longer, keeping devices powered on and consuming more energy.
+          </div>
+        </div>
+        <div class="analyze-feature reveal" data-expand-feature>
+          <div class="analyze-feature-icon blue">🌐</div>
+          <div class="analyze-feature-text">
+            <h4>Server location</h4>
+            <p>IP address mapped to country and region.</p>
+          </div>
+          <div class="analyze-feature-extra">
+            We resolve your domain's IP address and geolocate it to a city, region, and country. Server location affects carbon intensity since different electrical grids vary in how much CO₂ they produce per kWh.
+          </div>
+        </div>
+        <div class="analyze-feature reveal" data-expand-feature>
+          <div class="analyze-feature-icon green">🌿</div>
+          <div class="analyze-feature-text">
+            <h4>Green hosting check</h4>
+            <p>Is your server powered by renewable energy?</p>
+          </div>
+          <div class="analyze-feature-extra">
+            We check the Green Web Foundation's database to verify if your hosting provider uses renewable energy. Green hosting can reduce data center emissions by up to 95%, making it the single most impactful change.
+          </div>
+        </div>
+        <div class="analyze-feature reveal" data-expand-feature>
+          <div class="analyze-feature-icon orange">🏆</div>
+          <div class="analyze-feature-text">
+            <h4>Carbon score & grade</h4>
+            <p>A+ to F rating based on emissions per visit.</p>
+          </div>
+          <div class="analyze-feature-extra">
+            Using the Sustainable Web Design Model v4, we calculate grams of CO₂ per page view and assign a letter grade from A+ (exceptional, under 0.1g) to F (very poor, over 2g), with energy breakdowns across data centers, networks, and user devices.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FAQ ========== -->
+  <section class="section faq-section" id="faq">
+    <div class="container">
+      <div class="text-center reveal">
+        <span class="section-badge">❓ FAQ</span>
+        <h2 class="section-title">Frequently asked questions</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item reveal" data-faq>
+          <button class="faq-question">
+            <span>What is a website's carbon footprint?</span>
+            <span class="faq-toggle">▼</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              It's the total CO₂ emissions produced when someone loads a web page. This includes energy used by data centers to serve the content, networks to transfer the data, and the end user's device to render it. Larger, heavier pages produce more emissions.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal" data-faq>
+          <button class="faq-question">
+            <span>How accurate is the carbon estimate?</span>
+            <span class="faq-toggle">▼</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              We use the Sustainable Web Design Model v4, the industry-standard methodology used by the Green Web Foundation. While no estimate is perfectly accurate due to variations in grids, devices, and caching, our calculations provide a reliable and comparable measurement.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal" data-faq>
+          <button class="faq-question">
+            <span>What does "green hosting" mean?</span>
+            <span class="faq-toggle">▼</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Green hosting means the server hosting your website runs on renewable energy — solar, wind, or hydro. We verify this through the Green Web Foundation's public database of verified green hosting providers. Switching to green hosting reduces data center emissions by up to 95%.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal" data-faq>
+          <button class="faq-question">
+            <span>How can I reduce my website's carbon footprint?</span>
+            <span class="faq-toggle">▼</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Key strategies include: compressing and using modern image formats (WebP/AVIF), reducing JavaScript and CSS, deferring non-critical scripts, switching to a green hosting provider, using a CDN, enabling caching, subsetting fonts, and lazy-loading below-the-fold content.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal" data-faq>
+          <button class="faq-question">
+            <span>Is my data stored or tracked?</span>
+            <span class="faq-toggle">▼</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              No. carboniq is completely stateless. We don't store any analysis results, and we don't track your usage. Each analysis is performed in real-time and discarded after the response is sent.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-card reveal">
+        <canvas id="earth-canvas" class="cta-earth-canvas" width="100" height="100" aria-label="Rotating Earth animation"></canvas>
+        <h2>Ready to measure your impact?</h2>
+        <p>Scan your website in seconds and get a detailed carbon analysis with actionable reduction tips.</p>
+        <a href="analyze.html" class="btn btn-primary">Analyze website now</a>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand & Mission -->
+        <div class="footer-col">
+          <a href="#home" class="footer-brand-title">
+            <span class="logo-icon">🌱</span>
+            <span class="brand-name"><span class="brand-carbon">carbon</span><span class="brand-iq">iq</span></span>
+          </a>
+          <p class="footer-desc">
+            Empowering developers, designers, and organizations to measure, optimize, and decarbonize their digital web footprint with high-precision headless automation.
+          </p>
+          <div class="footer-status-badge">
+            <span class="footer-status-dot"></span>
+            Live Status: Online & Zero-Tracking
+          </div>
+        </div>
+
+        <!-- Col 2: Platform & Features -->
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="analyze.html">Analyze Website</a></li>
+            <li><a href="#features">Core Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#faq">FAQ & Help</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Find Us -->
+        <div class="footer-col">
+          <h4>Find Us</h4>
+          <ul>
+            <li><a href="tel:+15550198273">Tel: +1 (555) 019-8273</a></li>
+            <li><a href="mailto:carboniq@gmail.com">Gmail: carboniq@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer Bottom Bar -->
+      <div class="footer-bottom">
+        © 2026 carboniq. Built for a greener, more sustainable internet.
+      </div>
+    </div>
+  </footer>
+
+  </div><!-- /#content-panel -->
+
+  <!-- Lightbox overlay -->
+  <div class="lightbox-overlay" id="lightbox-overlay">
+    <button class="lightbox-close" id="lightbox-close">✕</button>
+    <div class="lightbox-content" id="lightbox-content"></div>
+  </div>
+  <script>
+    // =========================================================
+    // SCROLL-DRIVEN PANEL SLIDE-UP ANIMATION
+    // =========================================================
+    (function () {
+      const wrapper = document.getElementById('hero-scroll-wrapper');
+      const panel   = document.getElementById('content-panel');
+      if (!wrapper || !panel) return;
+
+      // How much extra scroll distance the hero stays "sticky" before
+      // the panel has fully risen. 100vh feels natural.
+      const TRAVEL = window.innerHeight;
+
+      // Give the wrapper extra height so the hero has room to be sticky
+      wrapper.style.height = (window.innerHeight + TRAVEL) + 'px';
+
+      // Keep panel right below the viewport when not yet triggered
+      panel.style.marginTop = (-TRAVEL) + 'px'; // Pull it flush under the hero wrapper
+
+      let settled = false;
+
+      function onScroll() {
+        const scrollY   = window.scrollY;
+        const heroBottom = wrapper.offsetTop + wrapper.offsetHeight; // where wrapper ends
+
+        // Progress: 0 = hero still visible, 1 = panel fully covered viewport
+        // Start sliding when user has scrolled past the viewport height
+        const start = wrapper.offsetTop;              // top of wrapper
+        const end   = start + TRAVEL;                 // full travel distance
+
+        const raw      = (scrollY - start) / TRAVEL;  // 0 → 1
+        const progress = Math.max(0, Math.min(1, raw));
+
+        if (!settled) {
+          // Ease out: panel decelerates as it reaches the top
+          const eased = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+          const translateY = (1 - eased) * 100; // 100vh → 0
+          panel.style.transform = `translateY(${translateY}vh)`;
+
+          // Also subtly scale/fade the hero as the panel rises
+          const heroScale  = 1 - progress * 0.04; // 1 → 0.96
+          const heroOpacity = 1 - progress * 0.5;
+          const heroEl = document.querySelector('.hero');
+          if (heroEl) {
+            heroEl.style.transform  = `scale(${heroScale})`;
+            heroEl.style.opacity    = heroOpacity;
+          }
+
+          if (progress >= 1 && !settled) {
+            settled = true;
+            panel.classList.add('panel-settled');
+          }
+        }
+
+        // Un-settle if user scrolls back up
+        if (progress < 1 && settled) {
+          settled = false;
+          panel.classList.remove('panel-settled');
+        }
+      }
+
+      // Recalculate on resize
+      window.addEventListener('resize', () => {
+        wrapper.style.height = (window.innerHeight + TRAVEL) + 'px';
+        onScroll();
+      });
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll(); // run once on load
+    })();
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
