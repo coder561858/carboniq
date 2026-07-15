@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const puppeteer = require('puppeteer');
+const puppeteerCore = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const dns = require('dns');
 const path = require('path');
 const { calculateEmissions, generateSuggestions } = require('./carbonCalculator');
@@ -111,11 +113,21 @@ app.post('/api/analyze', async (req, res) => {
       checkGreenHosting(hostname),
     ]);
 
-    // 3. Puppeteer — load page and capture resource data
-    browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-    });
+    // 3. Puppeteer — load page and capture resource data (supports Vercel serverless & local dev)
+    const isVercel = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION;
+    if (isVercel) {
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+    } else {
+      browser = await puppeteer.launch({
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      });
+    }
 
     const page = await browser.newPage();
 
@@ -395,7 +407,12 @@ function roundTo(num, decimals) {
   return Math.round(num * factor) / factor;
 }
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`\n🌱 Carbon Footprint Analyzer running at http://localhost:${PORT}\n`);
-});
+// Start server locally if not running on Vercel
+if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  app.listen(PORT, () => {
+    console.log(`\n🌱 Carbon Footprint Analyzer running at http://localhost:${PORT}\n`);
+  });
+}
+
+// Export for Vercel Serverless Functions
+module.exports = app;

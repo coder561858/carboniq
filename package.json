@@ -8,11 +8,13 @@
     "dev": "node server.js"
   },
   "dependencies": {
+    "@sparticuz/chromium": "^149.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^4.21.0",
     "mongoose": "^9.7.4",
-    "puppeteer": "^23.0.0"
+    "puppeteer": "^23.0.0",
+    "puppeteer-core": "^25.3.0"
   },
   "keywords": [
     "carbon",
