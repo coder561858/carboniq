@@ -74,7 +74,7 @@ node server.js
 
 ---
 
-## 🧮 Understanding the SWDM v4 Grading Scale
+## 🧮 Grading criteria used
 
 | Grade | CO₂ per Page View | Rating | Action Required |
 | :---: | :---: | :--- | :--- |
