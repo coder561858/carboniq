@@ -407,6 +407,19 @@ function roundTo(num, decimals) {
   return Math.round(num * factor) / factor;
 }
 
+// Fallback route to ensure Vercel always serves the frontend properly
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  const filePath = path.join(__dirname, 'public', req.path === '/' ? 'index.html' : req.path);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    }
+  });
+});
+
 // Start server locally if not running on Vercel
 if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_VERSION) {
   app.listen(PORT, () => {
