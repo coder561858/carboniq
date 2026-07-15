@@ -30,13 +30,13 @@ The internet accounts for roughly **3.7% of global greenhouse gas emissions**—
 
 ## 🛠️ Technology Stack
 
-| Layer | Technology 
+| Layer | Technology |
 | :--- | :--- | :--- |
-| **Backend Runtime** | **Node.js** 
-| **Web Framework** | **Express.js** 
-| **Database & ORM** | **MongoDB + Mongoose** 
-| **Web Scraper** | **Puppeteer** 
-| **Frontend** | **Vanilla HTML5, CSS3 & ES6+ JS** 
+| **Backend Runtime** | **Node.js** |
+| **Web Framework** | **Express.js** |
+| **Database & ORM** | **MongoDB + Mongoose** |
+| **Web Scraper** | **Puppeteer** |
+| **Frontend** | **Vanilla HTML5, CSS3 & ES6+ JS** |
 
 
 ---
