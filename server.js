@@ -111,8 +111,10 @@ app.post('/api/analyze', async (req, res) => {
     // 3. Puppeteer — load page and capture resource data (supports Vercel serverless & local dev)
     const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION);
     if (isVercel) {
-      const puppeteerCore = require('puppeteer-core');
-      const chromium = require('@sparticuz/chromium');
+      const puppeteerCoreMod = await import('puppeteer-core');
+      const puppeteerCore = puppeteerCoreMod.default || puppeteerCoreMod;
+      const chromiumMod = await import('@sparticuz/chromium');
+      const chromium = chromiumMod.default || chromiumMod;
       if (typeof chromium.setGraphicsMode === 'function' || 'setGraphicsMode' in chromium) {
         chromium.setGraphicsMode = false;
       }
@@ -123,7 +125,8 @@ app.post('/api/analyze', async (req, res) => {
         headless: chromium.headless || true,
       });
     } else {
-      const puppeteer = require('puppeteer');
+      const puppeteerMod = await import('puppeteer');
+      const puppeteer = puppeteerMod.default || puppeteerMod;
       browser = await puppeteer.launch({
         headless: 'new',
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
