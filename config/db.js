@@ -8,14 +8,21 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-  if (cached.conn) {
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
+  }
+
+  // Reset cached promise/connection if readyState is 0 (disconnected) or 3 (disconnecting) across cold starts
+  if (mongoose.connection.readyState !== 1 && mongoose.connection.readyState !== 2) {
+    cached.conn = null;
+    cached.promise = null;
   }
 
   const uri = process.env.MONGODB_URI;
   if (!uri && (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION)) {
-    console.warn('⚠️ MONGODB_URI not set on Vercel. Database operations will be skipped.');
-    return null;
+    const msg = 'MONGODB_URI environment variable is missing inside Vercel Project Settings! Please add it and redeploy.';
+    console.error(`❌ ${msg}`);
+    throw new Error(msg);
   }
 
   const targetUri = uri || 'mongodb://127.0.0.1:27017/carboniq';

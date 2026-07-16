@@ -346,7 +346,7 @@ app.get('/api/leaderboard', async (req, res) => {
   try {
     await connectDB();
     if (mongoose.connection.readyState !== 1) {
-      throw new Error('MongoDB disconnected (Check IP whitelist 0.0.0.0/0 on MongoDB Atlas)');
+      throw new Error(`MongoDB disconnected (readyState: ${mongoose.connection.readyState}). Please ensure MONGODB_URI is correct and IP whitelist 0.0.0.0/0 is allowed in MongoDB Atlas Network Access.`);
     }
     const cleanest = await Analysis.aggregate([
       { $group: { _id: "$hostname", avgCo2: { $avg: "$co2Grams" }, count: { $sum: 1 }, grade: { $first: "$grade" } } },
