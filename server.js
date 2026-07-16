@@ -293,24 +293,29 @@ app.post('/api/analyze', async (req, res) => {
       suggestions,
     };
 
-    // Save to MongoDB (Non-blocking)
-    Analysis.create({
-      url: targetUrl,
-      hostname,
-      pageTitle: pageTitle || hostname,
-      totalSize: totalTransferSize,
-      totalSizeMB: roundTo(totalTransferSize / (1024 * 1024), 2),
-      totalRequests,
-      co2Grams: emissions.perPageView.total,
-      grade: emissions.grade.letter,
-      isGreenHosted: greenData.green,
-      resources: resourceData,
-      serverGeo: {
-        country: geoData?.country,
-        region: geoData?.region,
-        timezone: geoData?.timezone
-      }
-    }).catch(err => console.error('Failed to save to MongoDB:', err.message));
+    // Save to MongoDB (Must be awaited in serverless so Vercel does not freeze container before write finishes)
+    try {
+      await Analysis.create({
+        url: targetUrl,
+        hostname,
+        pageTitle: pageTitle || hostname,
+        totalSize: totalTransferSize,
+        totalSizeMB: roundTo(totalTransferSize / (1024 * 1024), 2),
+        totalRequests,
+        co2Grams: emissions.perPageView.total,
+        grade: emissions.grade.letter,
+        isGreenHosted: greenData.green,
+        resources: resourceData,
+        serverGeo: {
+          country: geoData?.country,
+          region: geoData?.region,
+          timezone: geoData?.timezone
+        }
+      });
+      console.log(`✅ Saved scan result for ${hostname} to MongoDB`);
+    } catch (err) {
+      console.error('Failed to save to MongoDB:', err.message);
+    }
 
     res.json(response);
   } catch (error) {
