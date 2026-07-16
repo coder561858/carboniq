@@ -4,6 +4,7 @@ const dns = require('dns');
 const path = require('path');
 const { calculateEmissions, generateSuggestions } = require('./carbonCalculator');
 const connectDB = require('./config/db');
+const mongoose = require('mongoose');
 const Analysis = require('./models/Analysis');
 
 const app = express();
@@ -295,24 +296,28 @@ app.post('/api/analyze', async (req, res) => {
 
     // Save to MongoDB (Must be awaited in serverless so Vercel does not freeze container before write finishes)
     try {
-      await Analysis.create({
-        url: targetUrl,
-        hostname,
-        pageTitle: pageTitle || hostname,
-        totalSize: totalTransferSize,
-        totalSizeMB: roundTo(totalTransferSize / (1024 * 1024), 2),
-        totalRequests,
-        co2Grams: emissions.perPageView.total,
-        grade: emissions.grade.letter,
-        isGreenHosted: greenData.green,
-        resources: resourceData,
-        serverGeo: {
-          country: geoData?.country,
-          region: geoData?.region,
-          timezone: geoData?.timezone
-        }
-      });
-      console.log(`✅ Saved scan result for ${hostname} to MongoDB`);
+      if (mongoose.connection.readyState === 1) {
+        await Analysis.create({
+          url: targetUrl,
+          hostname,
+          pageTitle: pageTitle || hostname,
+          totalSize: totalTransferSize,
+          totalSizeMB: roundTo(totalTransferSize / (1024 * 1024), 2),
+          totalRequests,
+          co2Grams: emissions.perPageView.total,
+          grade: emissions.grade.letter,
+          isGreenHosted: greenData.green,
+          resources: resourceData,
+          serverGeo: {
+            country: geoData?.country,
+            region: geoData?.region,
+            timezone: geoData?.timezone
+          }
+        });
+        console.log(`✅ Saved scan result for ${hostname} to MongoDB`);
+      } else {
+        console.warn(`⚠️ Skipping MongoDB save for ${hostname} — Mongoose readyState is ${mongoose.connection.readyState} (Check MongoDB Atlas IP whitelist 0.0.0.0/0)`);
+      }
     } catch (err) {
       console.error('Failed to save to MongoDB:', err.message);
     }
@@ -340,6 +345,9 @@ app.post('/api/analyze', async (req, res) => {
 app.get('/api/leaderboard', async (req, res) => {
   try {
     await connectDB();
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('MongoDB disconnected (Check IP whitelist 0.0.0.0/0 on MongoDB Atlas)');
+    }
     const cleanest = await Analysis.aggregate([
       { $group: { _id: "$hostname", avgCo2: { $avg: "$co2Grams" }, count: { $sum: 1 }, grade: { $first: "$grade" } } },
       { $sort: { avgCo2: 1 } },
