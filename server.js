@@ -73,7 +73,6 @@ async function checkGreenHosting(hostname) {
 
 // Main analysis endpoint
 app.post('/api/analyze', async (req, res) => {
-  await connectDB();
   const { url } = req.body;
 
   if (!url) {
@@ -294,8 +293,9 @@ app.post('/api/analyze', async (req, res) => {
       suggestions,
     };
 
-    // Save to MongoDB (Must be awaited in serverless so Vercel does not freeze container before write finishes)
+    // Save to MongoDB (Non-blocking on DB error so analysis result is always sent cleanly to the browser)
     try {
+      await connectDB();
       if (mongoose.connection.readyState === 1) {
         await Analysis.create({
           url: targetUrl,
@@ -319,7 +319,7 @@ app.post('/api/analyze', async (req, res) => {
         console.warn(`⚠️ Skipping MongoDB save for ${hostname} — Mongoose readyState is ${mongoose.connection.readyState} (Check MongoDB Atlas IP whitelist 0.0.0.0/0)`);
       }
     } catch (err) {
-      console.error('Failed to save to MongoDB:', err.message);
+      console.warn('⚠️ Could not save scan to MongoDB (continuing to return analysis):', err.message);
     }
 
     res.json(response);
