@@ -465,7 +465,10 @@ async function analyzeWebsite(url) {
       body: JSON.stringify({ url }),
     });
     const data = await response.json();
-    if (!response.ok || data.error) throw new Error(data.error || 'Analysis failed');
+    if (!response.ok || data.error) {
+      const errMsg = data.details ? `${data.error || 'Analysis failed'} (${data.details})` : (data.error || 'Analysis failed');
+      throw new Error(errMsg);
+    }
 
     hideLoading();
     renderResults(data);

@@ -185,12 +185,14 @@ app.post('/api/analyze', async (req, res) => {
 
     // Navigate to the target URL (with graceful timeout fallback for heavy SPAs or continuous analytics)
     try {
+      const navTimeout = isVercel ? 8000 : 25000;
+      const extraWait = isVercel ? 1000 : 2500;
       await page.goto(targetUrl, {
         waitUntil: 'domcontentloaded',
-        timeout: 25000,
+        timeout: navTimeout,
       });
-      // Allow 2.5 seconds for extra dynamic scripts/images to load and trigger network events
-      await new Promise(r => setTimeout(r, 2500));
+      // Allow extra wait for dynamic scripts/images to load and trigger network events
+      await new Promise(r => setTimeout(r, extraWait));
     } catch (navErr) {
       console.warn(`Navigation warning for ${targetUrl}: ${navErr.message}. Proceeding with captured resources.`);
     }
