@@ -22,14 +22,15 @@ const connectDB = async () => {
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(targetUri, {
-      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000,
     }).then((mongoose) => {
       console.log('✅ MongoDB Connected successfully');
       return mongoose;
     }).catch(error => {
       cached.promise = null;
       console.error('❌ MongoDB Connection Error:', error.message);
-      return null;
+      throw error;
     });
   }
 

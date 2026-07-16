@@ -115,13 +115,17 @@ async function loadLeaderboard() {
   try {
     const res = await fetch('/api/leaderboard');
     const data = await res.json();
+    if (!res.ok || data.error) {
+      throw new Error(data.error || data.details || 'Failed to load leaderboard from database');
+    }
     renderTable('cleanest-table', data.cleanest, 'cleanest');
     renderTable('dirtiest-table', data.dirtiest, 'dirtiest');
     loadStats();
   } catch (err) {
     console.error('Failed to load leaderboard:', err);
-    document.getElementById('cleanest-table').innerHTML = emptyState('No data yet. Analyze some websites first!');
-    document.getElementById('dirtiest-table').innerHTML = emptyState('No data yet. Analyze some websites first!');
+    const errMsg = `Could not connect to database: ${err.message}. Make sure MONGODB_URI is set on Vercel and IP access (0.0.0.0/0) is allowed on MongoDB Atlas.`;
+    document.getElementById('cleanest-table').innerHTML = emptyState(errMsg);
+    document.getElementById('dirtiest-table').innerHTML = emptyState(errMsg);
   }
 }
 

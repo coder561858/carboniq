@@ -352,8 +352,8 @@ app.get('/api/leaderboard', async (req, res) => {
     ]);
     res.json({ cleanest, dirtiest });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    console.error('Leaderboard fetch error:', err);
+    res.status(500).json({ error: `Leaderboard DB error: ${err.message || 'Unknown error'}`, details: err.message });
   }
 });
 
