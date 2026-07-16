@@ -113,11 +113,14 @@ app.post('/api/analyze', async (req, res) => {
     if (isVercel) {
       const puppeteerCore = require('puppeteer-core');
       const chromium = require('@sparticuz/chromium');
+      if (typeof chromium.setGraphicsMode === 'function' || 'setGraphicsMode' in chromium) {
+        chromium.setGraphicsMode = false;
+      }
       browser = await puppeteerCore.launch({
-        args: chromium.args,
+        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process'],
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
+        headless: chromium.headless || true,
       });
     } else {
       const puppeteer = require('puppeteer');
@@ -312,7 +315,7 @@ app.post('/api/analyze', async (req, res) => {
     if (browser) await browser.close();
 
     // Provide user-friendly error messages
-    let message = 'Failed to analyze the website.';
+    let message = `Failed to analyze the website: ${error.message || 'Unknown error'}`;
     if (error.message?.includes('net::ERR_NAME_NOT_RESOLVED')) {
       message = 'Could not resolve the domain name. Please check the URL and try again.';
     } else if (error.message?.includes('Navigation timeout')) {

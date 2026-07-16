@@ -6,7 +6,7 @@
       "use": "@vercel/node",
       "config": {
         "includeFiles": ["public/**", "node_modules/@sparticuz/chromium/**"],
-        "maxLambdaSize": "50mb",
+        "maxLambdaSize": "100mb",
         "memory": 1024,
         "maxDuration": 60
       }
