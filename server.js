@@ -450,9 +450,11 @@ app.get('*', (req, res) => {
   });
 });
 
+// Connect to Database globally so it works on Vercel too
+connectDB();
+
 // Start server locally if not running on Vercel
 if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  connectDB();
   app.listen(PORT, () => {
     console.log(`\n🌱 Carbon Footprint Analyzer running at http://localhost:${PORT}\n`);
   });
