@@ -24,7 +24,6 @@
         <li><a href="index.html#how-it-works">How It Works</a></li>
         <li><a href="index.html#faq">FAQ</a></li>
         <li><a href="leaderboard.html">Leaderboard</a></li>
-        <li><a href="analyze.html" class="navbar-cta">Analyze Now →</a></li>
         <li><button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="#818cf8" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button></li>
       </ul>
     </div>
@@ -221,6 +220,11 @@
     <div class="lightbox-content" id="lightbox-content"></div>
   </div>
 
+  <script src="auth.js"></script>
+  <script>
+    // Protect this page
+    window.protectPage();
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

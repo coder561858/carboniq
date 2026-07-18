@@ -6,6 +6,8 @@ const { calculateEmissions, generateSuggestions } = require('./carbonCalculator'
 const connectDB = require('./config/db');
 const mongoose = require('mongoose');
 const Analysis = require('./models/Analysis');
+const authRoutes = require('./routes/authRoutes');
+const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +16,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Auth Routes
+app.use('/api/auth', authRoutes);
 
 // DNS resolve helper (promisified) — tries resolve4 first, then falls back to lookup
 function resolveDNS(hostname) {
@@ -72,7 +77,7 @@ async function checkGreenHosting(hostname) {
 }
 
 // Main analysis endpoint
-app.post('/api/analyze', async (req, res) => {
+app.post('/api/analyze', protect, async (req, res) => {
   const { url } = req.body;
 
   if (!url) {
@@ -298,6 +303,7 @@ app.post('/api/analyze', async (req, res) => {
       await connectDB();
       if (mongoose.connection.readyState === 1) {
         await Analysis.create({
+          user: req.user._id,
           url: targetUrl,
           hostname,
           pageTitle: pageTitle || hostname,
@@ -342,18 +348,20 @@ app.post('/api/analyze', async (req, res) => {
 });
 
 // Leaderboard endpoint
-app.get('/api/leaderboard', async (req, res) => {
+app.get('/api/leaderboard', protect, async (req, res) => {
   try {
     await connectDB();
     if (mongoose.connection.readyState !== 1) {
       throw new Error(`MongoDB disconnected (readyState: ${mongoose.connection.readyState}). Please ensure MONGODB_URI is correct and IP whitelist 0.0.0.0/0 is allowed in MongoDB Atlas Network Access.`);
     }
     const cleanest = await Analysis.aggregate([
+      { $match: { user: req.user._id } },
       { $group: { _id: "$hostname", avgCo2: { $avg: "$co2Grams" }, count: { $sum: 1 }, grade: { $first: "$grade" } } },
       { $sort: { avgCo2: 1 } },
       { $limit: 10 }
     ]);
     const dirtiest = await Analysis.aggregate([
+      { $match: { user: req.user._id } },
       { $group: { _id: "$hostname", avgCo2: { $avg: "$co2Grams" }, count: { $sum: 1 }, grade: { $first: "$grade" } } },
       { $sort: { avgCo2: -1 } },
       { $limit: 10 }
@@ -366,14 +374,14 @@ app.get('/api/leaderboard', async (req, res) => {
 });
 
 // History endpoint — fetch all scans for a domain (for trend chart)
-app.get('/api/history', async (req, res) => {
+app.get('/api/history', protect, async (req, res) => {
   try {
     await connectDB();
     const { domain } = req.query;
     if (!domain) {
       return res.status(400).json({ error: 'Domain query parameter is required' });
     }
-    const history = await Analysis.find({ hostname: domain })
+    const history = await Analysis.find({ hostname: domain, user: req.user._id })
       .select('co2Grams grade totalSizeMB totalRequests isGreenHosted createdAt')
       .sort({ createdAt: 1 })
       .limit(100)
@@ -386,10 +394,10 @@ app.get('/api/history', async (req, res) => {
 });
 
 // Recent scans endpoint
-app.get('/api/recent', async (req, res) => {
+app.get('/api/recent', protect, async (req, res) => {
   try {
     await connectDB();
-    const recent = await Analysis.find()
+    const recent = await Analysis.find({ user: req.user._id })
       .select('url hostname co2Grams grade totalSizeMB isGreenHosted createdAt')
       .sort({ createdAt: -1 })
       .limit(20)

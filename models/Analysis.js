@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const AnalysisSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
+  },
   url: {
     type: String,
     required: true

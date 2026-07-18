@@ -113,7 +113,7 @@ function timeAgo(dateStr) {
 // ===================== LEADERBOARD =====================
 async function loadLeaderboard() {
   try {
-    const res = await fetch('/api/leaderboard');
+    const res = await window.fetchWithAuth('/api/leaderboard');
     const data = await res.json();
     if (!res.ok || data.error) {
       throw new Error(data.error || data.details || 'Failed to load leaderboard from database');
@@ -188,7 +188,7 @@ function emptyState(message) {
 // ===================== STATS =====================
 async function loadStats() {
   try {
-    const res = await fetch('/api/recent');
+    const res = await window.fetchWithAuth('/api/recent');
     const data = await res.json();
     const scans = data.recent || [];
 
@@ -237,7 +237,7 @@ async function loadHistory(domain) {
   chartContainer.style.display = 'none';
 
   try {
-    const res = await fetch(`/api/history?domain=${encodeURIComponent(domain)}`);
+    const res = await window.fetchWithAuth(`/api/history?domain=${encodeURIComponent(domain)}`);
     const data = await res.json();
 
     if (!data.history || data.history.length === 0) {
@@ -393,7 +393,7 @@ function renderChart(history, domain) {
 // ===================== RECENT SCANS =====================
 async function loadRecentScans() {
   try {
-    const res = await fetch('/api/recent');
+    const res = await window.fetchWithAuth('/api/recent');
     const data = await res.json();
     renderRecentScans(data.recent || []);
   } catch (err) {

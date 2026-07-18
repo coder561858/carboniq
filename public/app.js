@@ -459,7 +459,7 @@ async function analyzeWebsite(url) {
   hideResults();
 
   try {
-    const response = await fetch('/api/analyze', {
+    const response = await window.fetchWithAuth('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url }),
