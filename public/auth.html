@@ -379,6 +379,33 @@
         font-size: 1.6rem;
         margin-bottom: 1rem;
       }
+
+      /* Mobile tab switcher */
+      .mobile-auth-tabs {
+        display: flex;
+        width: 100%;
+        border-bottom: 2px solid var(--border-color, rgba(255,255,255,0.1));
+        margin-bottom: 1.25rem;
+      }
+      .mobile-auth-tab {
+        flex: 1;
+        padding: 0.75rem;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--text-muted, #94a3b8);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s, border-color 0.2s;
+        margin-bottom: -2px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .mobile-auth-tab.active {
+        color: #10b981;
+        border-bottom-color: #10b981;
+      }
     }
   </style>
 </head>
@@ -402,9 +429,14 @@
     <!-- Make it start with right-panel-active to default to Sign Up view -->
     <div class="auth-container-sliding right-panel-active" id="auth-container">
       
-      <!-- Sign Up Form (On the left underneath overlay, revealed when right-panel-active) -->
+      <!-- Sign Up Form -->
       <div class="form-container sign-up-container">
         <form class="auth-form" id="signup-form">
+          <!-- Mobile tab switcher (hidden on desktop via JS) -->
+          <div class="mobile-auth-tabs" id="mobile-tabs" style="display:none">
+            <button type="button" class="mobile-auth-tab" id="tab-signin">Sign In</button>
+            <button type="button" class="mobile-auth-tab active" id="tab-signup">Sign Up</button>
+          </div>
           <h1>Create Account</h1>
           <div class="auth-error" id="signup-error"></div>
           <input type="text" id="signup-username" placeholder="Name" required />
@@ -414,9 +446,14 @@
         </form>
       </div>
 
-      <!-- Sign In Form (On the left initially, hidden when right-panel-active) -->
+      <!-- Sign In Form -->
       <div class="form-container sign-in-container">
         <form class="auth-form" id="login-form">
+          <!-- Mobile tab switcher (hidden on desktop via JS) -->
+          <div class="mobile-auth-tabs" id="mobile-tabs-signin" style="display:none">
+            <button type="button" class="mobile-auth-tab active" id="tab-signin2">Sign In</button>
+            <button type="button" class="mobile-auth-tab" id="tab-signup2">Sign Up</button>
+          </div>
           <h1>Sign In</h1>
           <div class="auth-error" id="login-error"></div>
           <input type="email" id="login-email" placeholder="Email Address" required />
