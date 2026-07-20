@@ -59,6 +59,7 @@ document.querySelectorAll('#tab-signin, #tab-signin2').forEach(btn => {
 
 // Init tabs visibility on load and resize
 function initMobileTabs() {
+  if (!authContainer) return; // not on an auth page, skip
   const isSignUp = authContainer.classList.contains('right-panel-active');
   updateMobileTabs(isSignUp);
 }
