@@ -137,12 +137,12 @@
   color: var(--green-700);
 }
 
-/* ---- Dark Theme: Hero becomes white/blue per user request ---- */
-[data-theme="dark"] .hero-bg-media {
+/* ---- Light Mode: Hero becomes white/blue per user request ---- */
+html:not([data-theme="dark"]) .hero-bg-media {
   background: radial-gradient(circle at 50% 30%, #f8faf9 0%, #ffffff 45%, #f1f5f9 100%);
 }
 
-[data-theme="dark"] .hero-bg-overlay {
+html:not([data-theme="dark"]) .hero-bg-overlay {
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.3) 0%,
@@ -151,22 +151,22 @@
   );
 }
 
-[data-theme="dark"] .hero h1 {
+html:not([data-theme="dark"]) .hero h1 {
   color: #1e3a5f;
   text-shadow: none;
 }
 
-[data-theme="dark"] .hero h1 .green {
+html:not([data-theme="dark"]) .hero h1 .green {
   color: #22c55e;
   text-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
 }
 
-[data-theme="dark"] .hero-desc {
+html:not([data-theme="dark"]) .hero-desc {
   color: #475569;
   text-shadow: none;
 }
 
-[data-theme="dark"] .hero-problem-badge {
+html:not([data-theme="dark"]) .hero-problem-badge {
   background: rgba(30, 58, 95, 0.08);
   border-color: rgba(59, 130, 246, 0.35);
   color: #1e3a5f;
@@ -174,37 +174,37 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="dark"] .hero-problem-badge .badge-dot {
+html:not([data-theme="dark"]) .hero-problem-badge .badge-dot {
   background: #3b82f6;
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
 }
 
-[data-theme="dark"] .hero .btn-primary {
+html:not([data-theme="dark"]) .hero .btn-primary {
   background: #22c55e;
   color: #ffffff;
 }
 
-[data-theme="dark"] .hero .btn-outline {
+html:not([data-theme="dark"]) .hero .btn-outline {
   border-color: #1e3a5f;
   color: #1e3a5f;
 }
 
-[data-theme="dark"] .hero .btn-outline:hover {
+html:not([data-theme="dark"]) .hero .btn-outline:hover {
   background: #1e3a5f;
   color: #ffffff;
 }
 
-/* Orbit elements on white bg (dark mode) */
-[data-theme="dark"] .orbit-ring {
+/* Orbit elements on white bg (light mode) */
+html:not([data-theme="dark"]) .orbit-ring {
   border-color: rgba(30, 58, 95, 0.12);
 }
 
-[data-theme="dark"] .orbit-icon {
+html:not([data-theme="dark"]) .orbit-icon {
   background: rgba(30, 58, 95, 0.08);
   border-color: rgba(30, 58, 95, 0.15);
 }
 
-[data-theme="dark"] .orbit-center-pulse {
+html:not([data-theme="dark"]) .orbit-center-pulse {
   border-color: rgba(34, 197, 94, 0.25);
 }
 
