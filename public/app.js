@@ -261,22 +261,49 @@ function initFAQAccordion() {
 }
 
 // ===================================================
-// ANALYZE FEATURES — click to expand with detail
+// ANALYZE FEATURES — click to open pop-out modal
 // ===================================================
 function initAnalyzeFeatures() {
   const grid = document.getElementById('analyze-grid');
   if (!grid) return;
 
+  // Map icon color class → accent hex for the modal badge
+  const colorMap = {
+    green:  '#22c55e',
+    purple: '#a855f7',
+    red:    '#ef4444',
+    blue:   '#3b82f6',
+    orange: '#f97316',
+  };
+
   grid.querySelectorAll('[data-expand-feature]').forEach(card => {
+    card.style.cursor = 'pointer';
     card.addEventListener('click', () => {
-      const wasExpanded = card.classList.contains('expanded');
+      const iconEl   = card.querySelector('.analyze-feature-icon');
+      const icon     = iconEl ? iconEl.textContent.trim() : '';
+      const colorCls = iconEl ? [...iconEl.classList].find(c => colorMap[c]) : 'green';
+      const accent   = colorMap[colorCls] || '#22c55e';
+      const title    = card.querySelector('.analyze-feature-text h4')?.textContent.trim() || '';
+      const desc     = card.querySelector('.analyze-feature-text p')?.textContent.trim() || '';
+      const extra    = card.querySelector('.analyze-feature-extra')?.innerHTML.trim() || '';
 
-      // Close all others
-      grid.querySelectorAll('.expanded').forEach(other => {
-        other.classList.remove('expanded');
-      });
+      const overlay = document.getElementById('lightbox-overlay');
+      const content = document.getElementById('lightbox-content');
 
-      card.classList.toggle('expanded', !wasExpanded);
+      content.innerHTML = `
+        <div class="feature-modal">
+          <div class="feature-modal-icon" style="background: ${accent}22; color: ${accent};">
+            ${icon}
+          </div>
+          <h3 class="feature-modal-title">${title}</h3>
+          <p class="feature-modal-desc">${desc}</p>
+          <div class="feature-modal-divider"></div>
+          <p class="feature-modal-extra">${extra}</p>
+        </div>
+      `;
+
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
     });
   });
 }
