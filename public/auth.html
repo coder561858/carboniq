@@ -266,75 +266,119 @@
         align-items: flex-start;
         margin-top: 80px;
       }
+
+      /* Stack layout: form on top (60%), overlay on bottom (40%) */
       .auth-container-sliding {
-        min-height: 600px;
-      }
-      .form-container {
+        min-height: 580px;
         width: 100%;
-        height: 50%;
-        background-color: var(--bg-card);
       }
+
+      /* All form containers: full width, top 60% of the card */
+      .form-container {
+        position: absolute;
+        width: 100%;
+        height: 60%;
+        top: 0;
+        left: 0;
+        transition: all 0.6s ease-in-out;
+      }
+
+      /* Sign-in: visible by default, slides up & fades out when right-panel-active */
       .sign-in-container {
-        top: 0;
-      }
-      .sign-up-container {
-        top: 0;
+        opacity: 1;
+        visibility: visible;
+        z-index: 2;
+        transform: translateY(0);
       }
       .auth-container-sliding.right-panel-active .sign-in-container {
-        transform: translateY(100%);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10%);
+        z-index: 1;
+      }
+
+      /* Sign-up: hidden by default, fades in when right-panel-active */
+      .sign-up-container {
+        opacity: 0;
+        visibility: hidden;
+        z-index: 1;
+        transform: translateY(10%);
       }
       .auth-container-sliding.right-panel-active .sign-up-container {
-        transform: translateY(100%);
+        opacity: 1;
+        visibility: visible;
+        z-index: 5;
+        transform: translateY(0);
+        animation: none;
       }
+
+      /* Overlay sits in the bottom 40% */
       .overlay-container {
+        position: absolute;
         left: 0;
-        top: 50%;
+        top: 60%;
         width: 100%;
-        height: 50%;
+        height: 40%;
+        overflow: hidden;
+        transition: none;
+        transform: none !important;
+        z-index: 100;
       }
-      .auth-container-sliding.right-panel-active .overlay-container {
-        transform: translateY(-100%);
-        transform: translateX(0); /* reset X */
-      }
+
+      /* Overlay itself fills the container, no sliding tricks needed on mobile */
       .overlay {
         width: 100%;
-        height: 200%;
-        top: -100%;
+        height: 200%;   /* tall enough for both panels stacked */
+        top: 0;
         left: 0;
+        transform: translateY(0) !important;
+        transition: transform 0.6s ease-in-out;
       }
       .auth-container-sliding.right-panel-active .overlay {
-        transform: translateY(50%);
-        transform: translateX(0); /* reset X */
+        transform: translateY(-50%) !important;
       }
+
+      /* Each overlay panel is full-width, half the overlay height */
       .overlay-panel {
+        position: absolute;
         width: 100%;
         height: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 0 24px;
+        text-align: center;
+        transform: none !important;
       }
+
+      /* overlay-left = "Welcome Back" panel — shown first (top of the tall overlay) */
       .overlay-left {
-        transform: translateY(-20%);
-        transform: translateX(0); /* reset X */
+        top: 0;
       }
-      .auth-container-sliding.right-panel-active .overlay-left {
-        transform: translateY(0);
-      }
+
+      /* overlay-right = "Hello, Ecosaver" panel — below */
       .overlay-right {
-        bottom: 0;
-        top: auto;
-        transform: translateY(0);
+        top: 50%;
+        bottom: auto;
       }
-      .auth-container-sliding.right-panel-active .overlay-right {
-        transform: translateY(20%);
-        transform: translateX(0); /* reset X */
+
+      .overlay-panel h1 {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
       }
+      .overlay-panel p {
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+      }
+
       .auth-form {
-        padding: 0 30px;
+        padding: 1.5rem 24px 1rem;
       }
-      
-      /* Reset X transforms for mobile to slide vertically instead */
-      .auth-container-sliding.right-panel-active .sign-in-container { transform: translateY(100%) translateX(0); }
-      .auth-container-sliding.right-panel-active .sign-up-container { transform: translateX(0); top: 0; z-index: 5; opacity: 1; }
-      .auth-container-sliding.right-panel-active .overlay-container { transform: translateY(-100%) translateX(0); }
-      .auth-container-sliding.right-panel-active .overlay { transform: translateY(50%) translateX(0); }
+      .auth-form h1 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+      }
     }
   </style>
 </head>
