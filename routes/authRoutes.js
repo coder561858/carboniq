@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
+const connectDB = require('../config/db');
 
 // Generate JWT
 const generateToken = (id) => {
@@ -16,6 +17,7 @@ const generateToken = (id) => {
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
+    await connectDB();
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
@@ -57,6 +59,7 @@ router.post('/register', async (req, res) => {
 // @access  Public
 router.post('/login', async (req, res) => {
   try {
+    await connectDB();
     const { email, password } = req.body;
 
     // Check for user email
