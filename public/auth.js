@@ -12,62 +12,15 @@ const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
 const authContainer = document.getElementById('auth-container');
 
-// Detect mobile
-function isMobile() {
-  return window.innerWidth <= 768;
-}
-
 // Unified mode switcher — works on both desktop and mobile
 function switchMode(toSignUp) {
-  if (toSignUp) {
-    authContainer.classList.add('right-panel-active');
-  } else {
-    authContainer.classList.remove('right-panel-active');
-  }
-  updateMobileTabs(toSignUp);
+  if (!authContainer) return;
+  authContainer.classList.toggle('right-panel-active', toSignUp);
 }
 
-// Show/hide mobile tabs and set active state
-function updateMobileTabs(isSignUp) {
-  const allTabSets = document.querySelectorAll('.mobile-auth-tabs');
-  allTabSets.forEach(tabs => {
-    tabs.style.display = isMobile() ? 'flex' : 'none';
-  });
-
-  // Update tab active states
-  ['tab-signin',  'tab-signin2' ].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('active', !isSignUp);
-  });
-  ['tab-signup', 'tab-signup2'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('active', isSignUp);
-  });
-}
-
-// Overlay ghost buttons (desktop)
+// Overlay ghost buttons
 if (signUpButton) signUpButton.addEventListener('click', () => switchMode(true));
 if (signInButton) signInButton.addEventListener('click', () => switchMode(false));
-
-// Mobile tab buttons
-document.querySelectorAll('#tab-signup, #tab-signup2').forEach(btn => {
-  btn.addEventListener('click', () => switchMode(true));
-});
-document.querySelectorAll('#tab-signin, #tab-signin2').forEach(btn => {
-  btn.addEventListener('click', () => switchMode(false));
-});
-
-// Init tabs visibility on load and resize
-function initMobileTabs() {
-  if (!authContainer) return; // not on an auth page, skip
-  const isSignUp = authContainer.classList.contains('right-panel-active');
-  updateMobileTabs(isSignUp);
-}
-
-window.addEventListener('resize', initMobileTabs);
-document.addEventListener('DOMContentLoaded', initMobileTabs);
-// Also run immediately in case DOMContentLoaded already fired
-initMobileTabs();
 
 
 // Handle Form Submissions
