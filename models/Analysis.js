@@ -54,4 +54,4 @@ const AnalysisSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Analysis', AnalysisSchema);
+module.exports = mongoose.models.Analysis || mongoose.model('Analysis', AnalysisSchema);

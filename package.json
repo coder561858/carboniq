@@ -1,22 +1,26 @@
 {
   "name": "carbon-footprint-analyzer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Analyze the carbon footprint of any website using the Sustainable Web Design Model v4",
-  "main": "server.js",
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
     "@sparticuz/chromium": "^149.0.0",
     "bcryptjs": "^3.0.3",
-    "cors": "^2.8.5",
+    "chart.js": "^4.4.4",
     "dotenv": "^17.4.2",
-    "express": "^4.21.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
+    "next": "^15.3.0",
     "puppeteer": "^23.0.0",
-    "puppeteer-core": "^25.3.0"
+    "puppeteer-core": "^25.3.0",
+    "react": "^19.1.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^19.1.0"
   },
   "keywords": [
     "carbon",

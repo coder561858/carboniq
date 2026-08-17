@@ -1,24 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const dns = require('dns');
-const path = require('path');
-const { calculateEmissions, generateSuggestions } = require('./carbonCalculator');
-const connectDB = require('./config/db');
-const mongoose = require('mongoose');
-const Analysis = require('./models/Analysis');
-const authRoutes = require('./routes/authRoutes');
-const { protect } = require('./middleware/authMiddleware');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Auth Routes
-app.use('/api/auth', authRoutes);
+import { NextResponse } from 'next/server';
+import dns from 'dns';
+import connectDB from '../../../lib/db';
+import mongoose from 'mongoose';
+import Analysis from '../../../models/Analysis';
+import { calculateEmissions, generateSuggestions } from '../../../lib/carbonCalculator';
+import { protect } from '../../../lib/auth';
 
 // DNS resolve helper (promisified) — tries resolve4 first, then falls back to lookup
 function resolveDNS(hostname) {
@@ -76,12 +62,48 @@ async function checkGreenHosting(hostname) {
   }
 }
 
-// Main analysis endpoint
-app.post('/api/analyze', protect, async (req, res) => {
-  const { url } = req.body;
+// Map CDP resource types to our categories
+function mapResourceType(type) {
+  const mapping = {
+    Image: 'images',
+    Script: 'scripts',
+    Stylesheet: 'stylesheets',
+    Font: 'fonts',
+    Document: 'documents',
+    Media: 'media',
+    XHR: 'other',
+    Fetch: 'other',
+    WebSocket: 'other',
+    Other: 'other',
+  };
+  return mapping[type] || 'other';
+}
+
+// Truncate long URLs for display
+function truncateUrl(url, maxLen = 80) {
+  if (!url || url.length <= maxLen) return url;
+  return url.substring(0, maxLen - 3) + '...';
+}
+
+function roundTo(num, decimals) {
+  const factor = Math.pow(10, decimals);
+  return Math.round(num * factor) / factor;
+}
+
+export const maxDuration = 60;
+
+export async function POST(request) {
+  // Auth check
+  const user = await protect(request);
+  if (!user) {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const body = await request.json();
+  const { url } = body;
 
   if (!url) {
-    return res.status(400).json({ error: 'URL is required' });
+    return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
 
   // Normalize URL
@@ -94,7 +116,7 @@ app.post('/api/analyze', protect, async (req, res) => {
   try {
     hostname = new URL(targetUrl).hostname;
   } catch {
-    return res.status(400).json({ error: 'Invalid URL format' });
+    return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
   }
 
   let browser;
@@ -266,7 +288,7 @@ app.post('/api/analyze', protect, async (req, res) => {
     });
 
     // 7. Build response
-    const response = {
+    const responseData = {
       success: true,
       url: targetUrl,
       hostname,
@@ -298,12 +320,12 @@ app.post('/api/analyze', protect, async (req, res) => {
       suggestions,
     };
 
-    // Save to MongoDB (Non-blocking on DB error so analysis result is always sent cleanly to the browser)
+    // Save to MongoDB (Non-blocking on DB error so analysis result is always sent cleanly)
     try {
       await connectDB();
       if (mongoose.connection.readyState === 1) {
         await Analysis.create({
-          user: req.user._id,
+          user: user._id,
           url: targetUrl,
           hostname,
           pageTitle: pageTitle || hostname,
@@ -322,13 +344,13 @@ app.post('/api/analyze', protect, async (req, res) => {
         });
         console.log(`✅ Saved scan result for ${hostname} to MongoDB`);
       } else {
-        console.warn(`⚠️ Skipping MongoDB save for ${hostname} — Mongoose readyState is ${mongoose.connection.readyState} (Check MongoDB Atlas IP whitelist 0.0.0.0/0)`);
+        console.warn(`⚠️ Skipping MongoDB save for ${hostname} — Mongoose readyState is ${mongoose.connection.readyState}`);
       }
     } catch (err) {
       console.warn('⚠️ Could not save scan to MongoDB (continuing to return analysis):', err.message);
     }
 
-    res.json(response);
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('Analysis failed:', error);
     if (browser) await browser.close();
@@ -343,122 +365,9 @@ app.post('/api/analyze', protect, async (req, res) => {
       message = 'Connection was refused by the server. The website may be down.';
     }
 
-    res.status(500).json({ error: message, details: error.message });
+    return NextResponse.json(
+      { error: message, details: error.message },
+      { status: 500 }
+    );
   }
-});
-
-// Leaderboard endpoint
-app.get('/api/leaderboard', protect, async (req, res) => {
-  try {
-    await connectDB();
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error(`MongoDB disconnected (readyState: ${mongoose.connection.readyState}). Please ensure MONGODB_URI is correct and IP whitelist 0.0.0.0/0 is allowed in MongoDB Atlas Network Access.`);
-    }
-    const cleanest = await Analysis.aggregate([
-      { $match: { user: req.user._id } },
-      { $group: { _id: "$hostname", avgCo2: { $avg: "$co2Grams" }, count: { $sum: 1 }, grade: { $first: "$grade" } } },
-      { $sort: { avgCo2: 1 } },
-      { $limit: 10 }
-    ]);
-    const dirtiest = await Analysis.aggregate([
-      { $match: { user: req.user._id } },
-      { $group: { _id: "$hostname", avgCo2: { $avg: "$co2Grams" }, count: { $sum: 1 }, grade: { $first: "$grade" } } },
-      { $sort: { avgCo2: -1 } },
-      { $limit: 10 }
-    ]);
-    res.json({ cleanest, dirtiest });
-  } catch (err) {
-    console.error('Leaderboard fetch error:', err);
-    res.status(500).json({ error: `Leaderboard DB error: ${err.message || 'Unknown error'}`, details: err.message });
-  }
-});
-
-// History endpoint — fetch all scans for a domain (for trend chart)
-app.get('/api/history', protect, async (req, res) => {
-  try {
-    await connectDB();
-    const { domain } = req.query;
-    if (!domain) {
-      return res.status(400).json({ error: 'Domain query parameter is required' });
-    }
-    const history = await Analysis.find({ hostname: domain, user: req.user._id })
-      .select('co2Grams grade totalSizeMB totalRequests isGreenHosted createdAt')
-      .sort({ createdAt: 1 })
-      .limit(100)
-      .lean();
-    res.json({ domain, history });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch history' });
-  }
-});
-
-// Recent scans endpoint
-app.get('/api/recent', protect, async (req, res) => {
-  try {
-    await connectDB();
-    const recent = await Analysis.find({ user: req.user._id })
-      .select('url hostname co2Grams grade totalSizeMB isGreenHosted createdAt')
-      .sort({ createdAt: -1 })
-      .limit(20)
-      .lean();
-    res.json({ recent });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch recent scans' });
-  }
-});
-
-// Map CDP resource types to our categories
-function mapResourceType(type) {
-  const mapping = {
-    Image: 'images',
-    Script: 'scripts',
-    Stylesheet: 'stylesheets',
-    Font: 'fonts',
-    Document: 'documents',
-    Media: 'media',
-    XHR: 'other',
-    Fetch: 'other',
-    WebSocket: 'other',
-    Other: 'other',
-  };
-  return mapping[type] || 'other';
 }
-
-// Truncate long URLs for display
-function truncateUrl(url, maxLen = 80) {
-  if (!url || url.length <= maxLen) return url;
-  return url.substring(0, maxLen - 3) + '...';
-}
-
-function roundTo(num, decimals) {
-  const factor = Math.pow(10, decimals);
-  return Math.round(num * factor) / factor;
-}
-
-// Fallback route to ensure Vercel always serves the frontend properly
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ error: 'API endpoint not found' });
-  }
-  const filePath = path.join(__dirname, 'public', req.path === '/' ? 'index.html' : req.path);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    }
-  });
-});
-
-// Connect to Database globally so it works on Vercel too
-connectDB();
-
-// Start server locally if not running on Vercel
-if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  app.listen(PORT, () => {
-    console.log(`\n🌱 Carbon Footprint Analyzer running at http://localhost:${PORT}\n`);
-  });
-}
-
-// Export for Vercel Serverless Functions
-module.exports = app;
