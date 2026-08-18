@@ -1,5 +1,5 @@
-const { NextResponse } = require('next/server');
-const { protect } = require('../../../../lib/auth');
+import { NextResponse } from 'next/server';
+import { protect } from '../../../../lib/auth';
 
 export async function GET(request) {
   const user = await protect(request);

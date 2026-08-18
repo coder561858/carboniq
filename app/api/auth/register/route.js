@@ -1,7 +1,7 @@
-const { NextResponse } = require('next/server');
-const connectDB = require('../../../../lib/db');
-const User = require('../../../../models/User');
-const { generateToken } = require('../../../../lib/auth');
+import { NextResponse } from 'next/server';
+import connectDB from '../../../../lib/db';
+import User from '../../../../models/User';
+import { generateToken } from '../../../../lib/auth';
 
 export async function POST(request) {
   try {
