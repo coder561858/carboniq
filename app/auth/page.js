@@ -38,7 +38,8 @@ export default function AuthPage() {
         });
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || 'Google authentication failed');
+          const debugInfo = data.debug ? ` | Debug: expected=${data.debug.expected}, received=${data.debug.received}, GOOGLE_CLIENT_ID=${data.debug.envSet?.GOOGLE_CLIENT_ID}, NEXT_PUBLIC=${data.debug.envSet?.NEXT_PUBLIC}` : '';
+          throw new Error((data.error || 'Google authentication failed') + debugInfo);
         }
         login(data.token, { id: data._id, username: data.username, email: data.email });
         router.push('/analyze');

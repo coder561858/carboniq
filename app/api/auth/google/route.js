@@ -34,11 +34,21 @@ export async function POST(request) {
     const googleData = await googleRes.json();
 
     // Validate the token is intended for our app
-    const expectedClientId = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (expectedClientId && googleData.aud !== expectedClientId) {
-      console.error(`Token audience mismatch: expected ${expectedClientId}, got ${googleData.aud}`);
+    const rawClientId = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const expectedClientId = rawClientId ? rawClientId.trim() : null;
+    const tokenAud = googleData.aud ? googleData.aud.trim() : null;
+    
+    if (expectedClientId && tokenAud !== expectedClientId) {
+      console.error(`Token audience mismatch: expected "${expectedClientId}", got "${tokenAud}"`);
       return NextResponse.json(
-        { error: 'Token was not issued for this application' },
+        { 
+          error: 'Token was not issued for this application',
+          debug: {
+            expected: expectedClientId ? `${expectedClientId.substring(0, 10)}...` : 'NOT SET',
+            received: tokenAud ? `${tokenAud.substring(0, 10)}...` : 'NONE',
+            envSet: { GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID, NEXT_PUBLIC: !!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID }
+          }
+        },
         { status: 401 }
       );
     }
