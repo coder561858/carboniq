@@ -34,8 +34,9 @@ export async function POST(request) {
     const googleData = await googleRes.json();
 
     // Validate the token is intended for our app
-    const expectedClientId = process.env.GOOGLE_CLIENT_ID;
+    const expectedClientId = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (expectedClientId && googleData.aud !== expectedClientId) {
+      console.error(`Token audience mismatch: expected ${expectedClientId}, got ${googleData.aud}`);
       return NextResponse.json(
         { error: 'Token was not issued for this application' },
         { status: 401 }
