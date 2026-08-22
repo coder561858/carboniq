@@ -20,14 +20,31 @@ export default function AuthPage() {
   const router = useRouter();
   const googleCallbackRef = useRef(null);
 
-  // Initialize Google Identity Services once the script loads
+  // Handle returning from Google full-page redirect
   useEffect(() => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId || clientId === 'your_google_client_id_here') {
-      console.warn('Google Client ID not configured');
-      return;
-    }
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      const idToken = params.get('id_token');
+      const error = params.get('error');
 
+      if (idToken) {
+        // Clear hash from URL for security
+        window.history.replaceState(null, '', window.location.pathname);
+        
+        // Wait a tick for ref to be set
+        setTimeout(() => {
+          if (googleCallbackRef.current) {
+            googleCallbackRef.current({ credential: idToken });
+          }
+        }, 100);
+      } else if (error) {
+        setGoogleError(`Google sign in error: ${error}`);
+      }
+    }
+  }, []);
+
+  // Initialize Google callback
+  useEffect(() => {
     const handleGoogleResponse = async (response) => {
       setGoogleError('');
       try {
@@ -49,47 +66,22 @@ export default function AuthPage() {
     };
 
     googleCallbackRef.current = handleGoogleResponse;
-
-    const initGoogle = () => {
-      if (!window.google?.accounts?.id) return;
-
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleResponse,
-        ux_mode: 'popup',
-      });
-
-      setGoogleReady(true);
-    };
-
-    // If script is already loaded, initialize immediately
-    if (window.google?.accounts?.id) {
-      initGoogle();
-    } else {
-      // Otherwise wait for it
-      const interval = setInterval(() => {
-        if (window.google?.accounts?.id) {
-          clearInterval(interval);
-          initGoogle();
-        }
-      }, 200);
-      return () => clearInterval(interval);
-    }
   }, [login, router]);
 
   const handleGoogleClick = () => {
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // Fallback: open Google OAuth popup manually via redirect
-          const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-          const redirectUri = `${window.location.origin}/api/auth/google-callback`;
-          setGoogleError('Google Sign-In popup was blocked. Please allow popups or try again.');
-        }
-      });
-    } else {
-      setGoogleError('Google Sign-In is not available. Please refresh the page.');
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      setGoogleError('Google Client ID not configured');
+      return;
     }
+    
+    // Use the current page URL as the redirect URI
+    const redirectUri = `${window.location.origin}/auth`;
+    const nonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    
+    // Redirect to Google's standard OAuth full-page login
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=id_token&scope=email profile openid&nonce=${nonce}`;
+    window.location.href = url;
   };
 
   const handleAuth = async (endpoint, body, setError) => {
